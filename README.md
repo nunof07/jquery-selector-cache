@@ -54,6 +54,12 @@ Include the script in your page after jQuery.
 <script src="jquery.selectorcache.js"></script>
 ```
 
+Or using the RawGit CDN.
+
+```html
+<script src="https://cdn.rawgit.com/nunof07/jquery-selector-cache/v0.1.0/jquery.selectorcache.min.js"></script>
+```
+
 ### Retrieving elements
 The q method mimics [jQuery()](https://api.jquery.com/jQuery/)'s usage as much as possible. Use it to retrieve elements.
 
