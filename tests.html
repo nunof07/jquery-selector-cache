@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>jQuery Selector Cache Plugin Tests</title>
+	<link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-1.18.0.css">
+</head>
+
+<body>
+	<div class="container">
+		<div class="row" id="row1">
+			<div class="column" id="column1-1"></div>
+			<div class="column" id="column1-2"></div>
+			<div class="column" id="column1-3"></div>
+		</div>
+		<div class="row" id="row2">
+			<div class="column" id="column2-1"></div>
+			<div class="column" id="column2-2"></div>
+			<div class="column" id="column2-3"></div>
+		</div>
+		<div class="row" id="row3">
+			<div class="column" id="column3-1"></div>
+			<div class="column" id="column3-2"></div>
+			<div class="column" id="column3-3"></div>
+		</div>
+	</div>
+	<div id="qunit"></div>
+  	<div id="qunit-fixture"></div>
+	<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
+	<script src="http://code.jquery.com/qunit/qunit-1.18.0.js"></script>
+	<script src="jquery.selectorcache.js"></script>
+	<script>
+		// $(document).ready(function () {
+		// 	var runs = 10000,
+		// 		i;
+			
+		// 	// $
+		// 	console.time("$");
+			
+		// 	for (i = 0; i < runs; i++) {
+		// 		$("#row3 .column");
+		// 	}
+		// 	console.timeEnd("$");
+			
+		// 	// $.q
+		// 	console.time("$.q");
+			
+		// 	for (i = 0; i < runs; i++) {
+		// 		$.q("#row3 .column");
+		// 	}
+		// 	console.timeEnd("$.q");
+		// });
+		function assertSelectorCached(assert, expected, actual, key) {
+			assert.deepEqual(expected, actual, "Passed equality!" );
+			assert.ok($.selectorCache.hasOwnProperty(key), "Cache updated!");
+			assert.deepEqual(expected, $.selectorCache[key], "Passed cache equality!");
+		};
+		QUnit.module("$.q", {
+			beforeEach: function() {
+				// clear cache before each test
+				$.selectorCache = {};
+			}
+		});
+		QUnit.test("(selector)", function (assert) {
+			var selector = ".row",
+				expected = $(selector),
+				actual = $.q(selector);
+			assertSelectorCached(assert, expected, actual, selector);
+		});
+		QUnit.test("(child selector)", function (assert) {
+			var selector = "#row2 .column",
+				expected = $(selector),
+				actual = $.q(selector);
+			assertSelectorCached(assert, expected, actual, selector);
+		});
+		QUnit.test("(selector, string context)", function (assert) {
+			var selector = ".column",
+				context = "#row3",
+				expected = $(selector, context),
+				actual = $.q(selector, context),
+				key = context + " " + selector;
+			assertSelectorCached(assert, expected, actual, key);
+		});
+		QUnit.test("(selector, jquery context)", function (assert) {
+			var selector = ".column",
+				context = $("#row3"),
+				expected = $(selector, context),
+				actual = $.q(selector, context),
+				key = context.selector + " " + selector;
+			assertSelectorCached(assert, expected, actual, key);
+		});
+		QUnit.test("(selector, q context)", function (assert) {
+			var selector = ".column",
+				context = $.q("#row3"),
+				expected = $(selector, context),
+				actual = $.q(selector, context),
+				key = context.selector + " " + selector;
+			assertSelectorCached(assert, expected, actual, key);
+		});
+		QUnit.test("selectorCache[key]", function (assert) {
+			var selector = "#row2 .column";
+			$.selectorCache[selector] = $(selector);
+			assert.deepEqual($.selectorCache[selector], $.q(selector), "Passed equality!" );
+			assert.deepEqual($(selector), $.q(selector), "Passed equality!" );
+		});
+		QUnit.test("(document)", function (assert) {
+			var selector = document,
+				expected = $(selector),
+				actual = $.q(selector);
+			assert.deepEqual(expected, actual, "Passed equality!" );
+			assert.deepEqual({}, $.selectorCache, "Cache not updated!" );
+		});
+		QUnit.test("(window)", function (assert) {
+			var selector = window,
+				expected = $(selector),
+				actual = $.q(selector);
+			assert.deepEqual(expected, actual, "Passed equality!" );
+			assert.deepEqual({}, $.selectorCache, "Cache not updated!" );
+		});
+		QUnit.test("()", function (assert) {
+			var expected = $(),
+				actual = $.q();
+			assert.deepEqual(expected, actual, "Passed equality!" );
+			assert.deepEqual({}, $.selectorCache, "Cache not updated!" );
+		});
+		QUnit.test("(selector, true)", function (assert) {
+			var selector = ".row",
+				expected = $(selector),
+				actual = $.q(selector, true);
+			assertSelectorCached(assert, expected, actual, selector);
+		});
+		QUnit.test("(selector, false)", function (assert) {
+			var selector = ".row",
+				expected = $(selector),
+				actual = $.q(selector, false);
+			assertSelectorCached(assert, expected, actual, selector);
+		});
+		QUnit.test("(selector, string context, true)", function (assert) {
+			var selector = ".column",
+				context = "#row1",
+				expected = $(selector, context),
+				actual = $.q(selector, context, true),
+				key = context + " " + selector;
+			assertSelectorCached(assert, expected, actual, key);
+		});
+		QUnit.test("(selector, string context, false)", function (assert) {
+			var selector = ".column",
+				context = "#row1",
+				expected = $(selector, context),
+				actual = $.q(selector, context, false),
+				key = context + " " + selector;
+			assertSelectorCached(assert, expected, actual, key);
+		});
+	</script>
+</body>
+
+</html>
