@@ -3,7 +3,7 @@
 - Helps avoiding unnecessary selector lookups or having to use extra variables to store them.
 - Supports contexts and cache refreshes.
 
-Based on [Justin Sternberg's $-cache-with-find.js](https://gist.github.com/jtsternberg/14978579a9edf42ed069).
+Based on Justin Sternberg's [$-cache-with-find.js](https://gist.github.com/jtsternberg/14978579a9edf42ed069).
 
 ## Why?
 Selector lookups are expensive. You should avoid them unless they are needed.
@@ -12,8 +12,10 @@ Instead of this:
 
 ```javascript
 $("#container .box").css("color", "red");
+
 // somewhere else...
 $("#container .box").css("font-weight", "bold");
+
 // somewhere else...
 $("#container .box").css("background-color", "yellow");
 ```
@@ -24,8 +26,10 @@ You should be doing this:
 var $containerBox = $("#container .box");
  
 $containerBox.css("color", "red");
+
 // somewhere else...
 $containerBox.css("font-weight", "bold");
+
 // somewhere else...
 $containerBox.css("background-color", "yellow");
 ```
@@ -34,8 +38,10 @@ With this plugin you don't need the helper variable.
 
 ```javascript
 $.q("#container .box").css("color", "red");
+
 // somewhere else...
 $.q("#container .box").css("font-weight", "bold");
+
 // somewhere else...
 $.q("#container .box").css("background-color", "yellow");
 ```
@@ -48,9 +54,10 @@ Include the script in your page after jQuery.
 <script src="jquery.selectorcache.js"></script>
 ```
 
-I tried to mimic [jQuery()](https://api.jquery.com/jQuery/)'s usage as much as possible.
+### Retrieving elements
+The q method mimics [jQuery()](https://api.jquery.com/jQuery/)'s usage as much as possible. Use it to retrieve elements.
 
-Use the q method to retrieve a jQuery object. If the object is in cache it will be retrieved directly, otherwise it will be saved to cache first.
+If the object is in cache it will be retrieved directly, otherwise it will be saved to cache first.
 
 ```javascript
 // query elements and store them in cache
@@ -67,6 +74,7 @@ $.q(".container", ".parent");
 $.q(".container", $.q(".parent"));
 ```
 
+### Refreshing the cache
 You can refresh the cache for a particular selector by passing true as the second or third argument.
 
 ```javascript
@@ -75,6 +83,7 @@ $.q(".container", true);
 $.q(".container", ".parent", true);
 ```
 
+### Accessing the cache directly
 The cache is stored in jQuery. You can access it directly.
 
 Clear the cache by assigning an empty object.
